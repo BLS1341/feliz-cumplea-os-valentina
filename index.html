@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Para Valentina 🎂</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
@@ -13,18 +14,22 @@
             background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
             color: white;
             overflow: hidden;
-            position: relative; /* Necesario para los elementos flotantes */
+            position: relative;
+            /* Evita seleccionar texto o que parpadee azul al tocar en el celu */
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .screen {
             display: none;
-            height: 100vh;
-            padding: 30px;
+            height: 100dvh; /* dvh evita problemas con la barra del navegador en celulares */
+            padding: 25px 20px;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             text-align: center;
             box-sizing: border-box;
+            width: 100%;
         }
 
         .active {
@@ -34,18 +39,22 @@
 
         button {
             margin-top: 15px;
-            padding: 12px 22px;
+            padding: 16px 20px; /* Más alto para tocar cómodo con el dedo */
+            width: 100%; /* Ancho completo estilo app */
+            max-width: 320px; /* Límite para que no se vea gigante en PC */
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             background: linear-gradient(45deg, #7a5cff, #b07cff);
             color: white;
             cursor: pointer;
-            font-size: 15px;
-            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.2s, opacity 0.2s;
+            touch-action: manipulation;
         }
 
-        button:hover {
-            transform: scale(1.05);
+        button:active {
+            transform: scale(0.96); /* Efecto de hundirse al tocar */
         }
 
         button:disabled {
@@ -55,9 +64,10 @@
 
         #errorMsg {
             color: #ff8080;
-            margin-top: 10px;
+            margin-top: 15px;
             transition: 0.2s;
             min-height: 24px;
+            font-size: 14px;
         }
 
         @keyframes fade {
@@ -65,11 +75,10 @@
             to {opacity: 1; transform: translateY(0);}
         }
 
-        /* Confeti mejorado con rotación */
         .confetti {
             position: fixed;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             top: -10px;
             animation: fall linear infinite;
             z-index: 100;
@@ -80,7 +89,6 @@
             100% { transform: translateY(110vh) rotate(720deg); }
         }
 
-        /* Sistema de logros */
         .logro {
             position: fixed;
             bottom: -100px;
@@ -88,51 +96,48 @@
             transform: translateX(-50%);
             background: rgba(30, 30, 50, 0.95);
             color: white;
-            padding: 12px 24px;
+            padding: 12px 20px;
             border-radius: 30px;
             border: 2px solid #b07cff;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 9999;
+            width: 85%;
+            text-align: center;
         }
 
         .logro.show {
             bottom: 40px;
         }
 
-        /* --- NUEVO: BOTÓN INTERRUPTOR RANDOM --- */
+        /* Botón Interruptor Random ajustado para móvil */
         #interruptorRandom {
             position: fixed;
-            top: 20px;
+            top: env(safe-area-inset-top, 20px); /* Respeta el notch de los celulares */
             right: 20px;
-            z-index: 2000; /* Por encima de todo, menos de las fotos random */
+            z-index: 2000;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 50px;
-            padding: 8px 16px;
-            cursor: pointer;
+            padding: 10px 16px;
             font-size: 12px;
-            transition: 0.3s;
+            width: auto;
+            max-width: none;
             backdrop-filter: blur(5px);
+            margin-top: 0;
         }
 
-        #interruptorRandom:hover {
-            background: rgba(176, 124, 255, 0.3);
-            border-color: #b07cff;
-        }
-
-        /* --- NUEVO: MODAL PARA FOTOS RANDOM --- */
         .random-overlay {
-            display: none; /* Escondido por defecto */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 3000; /* Lo más alto de todo */
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
             justify-content: center;
             align-items: center;
             flex-direction: column;
@@ -142,20 +147,22 @@
         @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
 
         #fotoRandomContenedor {
-            max-width: 80%;
-            max-height: 80%;
+            max-width: 90%;
+            max-height: 70dvh;
             border-radius: 15px;
-            border: 4px solid white;
+            border: 3px solid white;
             box-shadow: 0 0 20px rgba(176, 124, 255, 0.7);
-            object-fit: contain; /* No deforma la foto */
+            object-fit: contain;
         }
 
-        /* Fondo pantalla final */
         #s8 {
-            /* SOLAMENTE CAMBIÁ "TU_FOTO_ACA.jpg" POR EL NOMBRE DE TU ARCHIVO */
             background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('mono2.jpg');
             background-size: cover;
             background-position: center;
+        }
+        
+        iframe {
+            max-width: 100%;
         }
     </style>
 </head>
@@ -168,22 +175,22 @@
 
 <div class="random-overlay" id="randomModal">
     <img src="" alt="Momento Random" id="fotoRandomContenedor">
-    <button onclick="cerrarFotoRandom()" style="background: white; color: #1a1a2e; font-weight: bold; margin-top: 25px;">Cerrar (está bien, sigo)</button>
+    <button onclick="cerrarFotoRandom()" style="background: white; color: #1a1a2e; font-weight: bold; margin-top: 30px; width: 80%;">Cerrar (está bien, sigo)</button>
 </div>
 
 <div class="screen active" id="s1">
-    <h1>Valentina… 🎂</h1>
-    <p>Si estás viendo esto, es porque llegó tu día</p>
+    <h1 style="margin-bottom: 5px;">Valentina… 🎂</h1>
+    <p style="margin-bottom: 30px; font-size: 14px; opacity: 0.8;">Si estás viendo esto, es porque llegó tu día</p>
     <button onclick="goTo(2)">Empezar (si queres, si no, no, no se)</button>
 </div>
 
 <div class="screen" id="s2">
-    <p id="carta"></p>
-    <button onclick="goTo(3)">Sigamos dale</button>
+    <p id="carta" style="font-size: 15px; line-height: 1.5; text-align: left; padding: 0 10px;"></p>
+    <button onclick="goTo(3)" style="margin-top: 25px;">Sigamos dale</button>
 </div>
 
 <div class="screen" id="s3">
-    <p>¿Dónde nos conocimos?</p>
+    <p style="margin-bottom: 25px; font-size: 18px; font-weight: 500;">¿Dónde nos conocimos?</p>
     <button onclick="wrong()">en el soleil</button>
     <button onclick="wrong(); triggerLogro('Juraría que fue el basurero 🗑️')">en un basurero (ahi te encontre)</button>
     <button onclick="triggerLogro('Recuerdos inolvidables ✨'); goTo(4)">en la secundaria</button>
@@ -192,20 +199,20 @@
 </div>
 
 <div class="screen" id="s4">
-    <p>Hace 6 años… secundaria… voley… y te hice mierda por no saber jugar</p>
+    <p style="padding: 0 15px;">Hace 6 años… secundaria… voley… y te hice mierda por no saber jugar</p>
     <button onclick="goTo(5)">fa loco solo te burlas</button>
 </div>
 
 <div class="screen" id="s5">
-    <p>Esto merece música, pero no se que cancion poner jajajja asi que nada 🎧</p>
-    <iframe style="border-radius:12px"
+    <p style="padding: 0 15px;">Esto merece música, pero no se que cancion poner jajajja asi que nada 🎧</p>
+    <iframe style="border-radius:12px; margin: 20px 0;"
             src="https://open.spotify.com/embed/track/4cOdK2wGLETKBW3PvgPWqT"
             width="300" height="80"></iframe>
     <button onclick="goTo(6)">Siguiente</button>
 </div>
 
 <div class="screen" id="s6">
-    <p>¿esto requiere foto pata?</p>
+    <p style="margin-bottom: 25px; font-size: 18px; font-weight: 500;">¿esto requiere foto pata?</p>
     <button onclick="wrong()">si obvio que si</button>
     <button onclick="wrong()">no ni ahi gil mugriento</button>
     <button onclick="triggerLogro('Que olor que tenes por dios 🦨'); goTo(7)">no podemos tengo las patas sucias</button>
@@ -214,21 +221,19 @@
 </div>
 
 <div class="screen" id="s7">
-    <p>fuera de todo, pasamos muchas cosas y puedo decir con seguridad
-        Sos de las mejores cosas que me pasaron ❤️</p>
-    <button onclick="showFinal()">No toques esto (ahre pa que lo ponia entonces)</button>
+    <p style="padding: 0 15px;">fuera de todo, pasamos muchas cosas y puedo decir con seguridad...<br><br><b>Sos de las mejores cosas que me pasaron ❤️</b></p>
+    <button onclick="showFinal()" style="margin-top: 30px;">No toques esto (ahre pa que lo ponia entonces)</button>
 </div>
 
 <div class="screen" id="s8">
-    <h2>Feliz cumpleaños enana</h2>
-    <p>Te quiero muchísimo</p>
+    <h2 style="font-size: 28px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Feliz cumpleaños enana</h2>
+    <p style="font-size: 18px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Te quiero muchísimo</p>
 </div>
 
 <script>
     let current = 1;
 
-    // --- NUEVO: LISTA DE FOTOS RANDOM (ARREGLO DE JAVASCRIPT) ---
-    // Acá poné los nombres de tus archivos graciosos. Podés agregar infinitos.
+    // Tu lista de fotos random intacta
     const listaFotosRandom = [
         'cherk.jpg',
         'robleii.jpg',
@@ -236,13 +241,10 @@
         'mike.jpg',
         'roblei.jpg',
         'mari.jpg'
-
     ];
 
-    // Para no repetir la misma foto dos veces seguidas
     let ultimaFotoRandomIndex = -1;
 
-    /* Función para navegar y música */
     function goTo(n){
         disableButtons();
 
@@ -250,13 +252,11 @@
         document.getElementById('s'+n).classList.add('active');
         current = n;
 
-        // Limpiar errores
         document.querySelectorAll("#errorMsg").forEach(e => e.innerText = "");
 
-        // Arranca la música al pasar a la pantalla de la carta
         if(n === 2){
             let musica = document.getElementById("musicaFondo");
-            musica.volume = 0.15; // Volumen bajito
+            musica.volume = 0.15; 
             musica.play().catch(e => console.log("Audio de fondo bloqueado"));
 
             document.getElementById("carta").innerHTML = "";
@@ -265,14 +265,11 @@
         }
     }
 
-    /* --- NUEVO: MOSTRAR FOTO RANDOM --- */
     function mostrarFotoRandom() {
-        // Sonido de logro (reutilizado)
         let sonidoPop = new Audio('https://www.myinstants.com/media/sounds/mario-coin.mp3');
         sonidoPop.volume = 0.4;
-        sonidoPop.play();
+        sonidoPop.play().catch(e => {});
 
-        // Elegir índice aleatorio distinto al último
         let randomIndex;
         do {
             randomIndex = Math.floor(Math.random() * listaFotosRandom.length);
@@ -281,17 +278,14 @@
         ultimaFotoRandomIndex = randomIndex;
         const fotoElegida = listaFotosRandom[randomIndex];
 
-        // Cargar y mostrar
         document.getElementById("fotoRandomContenedor").src = fotoElegida;
         document.getElementById("randomModal").style.display = "flex";
     }
 
-    /* --- NUEVO: CERRAR FOTO RANDOM --- */
     function cerrarFotoRandom() {
         document.getElementById("randomModal").style.display = "none";
     }
 
-    /* Evitar spam de clicks */
     function disableButtons(){
         document.querySelectorAll("button").forEach(btn=>{
             btn.disabled = true;
@@ -299,21 +293,24 @@
         });
     }
 
-    /* Respuesta incorrecta */
     function wrong(){
         const msg = document.querySelector(".active #errorMsg");
         if(msg){
             msg.innerText = "❌ Respuesta incorrecta";
-            msg.style.transform = "scale(1.2)";
+            msg.style.transform = "scale(1.1)";
             setTimeout(()=> msg.style.transform = "scale(1)", 200);
+            
+            // Vibración si el celular de ella lo soporta
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
         }
     }
 
-    /* Función para logros con sonido de moneda */
     function triggerLogro(mensaje) {
         let sonidoLogro = new Audio('https://www.myinstants.com/media/sounds/mario-coin.mp3');
         sonidoLogro.volume = 0.5;
-        sonidoLogro.play().catch(e => console.log("Audio bloqueado"));
+        sonidoLogro.play().catch(e => {});
 
         if (document.querySelector('.logro')) return;
 
@@ -327,10 +324,9 @@
         setTimeout(() => {
             logroDiv.classList.remove("show");
             setTimeout(() => logroDiv.remove(), 500);
-        }, 4000);
+        }, 3500);
     }
 
-    /* Carta con efecto de tipeo */
     const texto = `¿Te acordás del día en que te conocí?
 
 Ese día supe que mataría por vos.
@@ -368,33 +364,34 @@ Feliz cumpleaños, enana ❤️`;
     let i = 0;
     function escribir(){
         if(i < texto.length){
-            document.getElementById("carta").innerHTML += texto.charAt(i);
+            // Optimizado para celular: saltos de línea con <br> y un poco más rápido (30ms)
+            if(texto.charAt(i) === '\n') {
+                document.getElementById("carta").innerHTML += '<br>';
+            } else {
+                document.getElementById("carta").innerHTML += texto.charAt(i);
+            }
             i++;
-            setTimeout(escribir, 20);
+            setTimeout(escribir, 30);
         }
     }
 
-    /* Final: Festejo, sonido y confeti */
     function showFinal(){
         goTo(8);
 
-        // Sonido de festejo
         let sonidoFinal = new Audio('https://www.myinstants.com/media/sounds/yay_1.mp3');
         sonidoFinal.volume = 0.6;
-        sonidoFinal.play().catch(e => console.log("Audio bloqueado"));
+        sonidoFinal.play().catch(e => {});
 
-        // Limpiar confeti viejo si hubiera
         document.querySelectorAll(".confetti").forEach(e => e.remove());
 
-        // Generar 100 papelitos de confeti
-        for(let j=0; j<100; j++){
+        // Reducido a 60 confetis para que no se le trabe el celular
+        for(let j=0; j<60; j++){
             let conf = document.createElement("div");
             conf.className = "confetti";
             conf.style.left = Math.random()*100+"vw";
             conf.style.animationDuration = (Math.random()*3+2)+"s";
             conf.style.background = "hsl("+Math.random()*360+",100%,60%)";
 
-            // Mitad cuadrados, mitad redondos
             if (Math.random() > 0.5) {
                 conf.style.borderRadius = "50%";
             }
