@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Valentina 🎂</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
+            color: white;
+            overflow: hidden;
+            position: relative;
+            /* Evita seleccionar texto o que parpadee azul al tocar en el celu */
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .screen {
+            display: none;
+            height: 100dvh; /* dvh evita problemas con la barra del navegador en celulares */
+            padding: 25px 20px;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .active {
+            display: flex;
+            animation: fade 0.8s ease;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 16px 20px; /* Más alto para tocar cómodo con el dedo */
+            width: 100%; /* Ancho completo estilo app */
+            max-width: 320px; /* Límite para que no se vea gigante en PC */
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(45deg, #7a5cff, #b07cff);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.2s, opacity 0.2s;
+            touch-action: manipulation;
+        }
+
+        button:active {
+            transform: scale(0.96); /* Efecto de hundirse al tocar */
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #errorMsg {
+            color: #ff8080;
+            margin-top: 15px;
+            transition: 0.2s;
+            min-height: 24px;
+            font-size: 14px;
+        }
+
+        @keyframes fade {
+            from {opacity: 0; transform: translateY(15px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            top: -10px;
+            animation: fall linear infinite;
+            z-index: 100;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(720deg); }
+        }
+
+        .logro {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 50, 0.95);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 2px solid #b07cff;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+            width: 85%;
+            text-align: center;
+        }
+
+        .logro.show {
+            bottom: 40px;
+        }
+
+        /* Botón Interruptor Random ajustado para móvil */
+        #interruptorRandom {
+            position: fixed;
+            top: env(safe-area-inset-top, 20px); /* Respeta el notch de los celulares */
+            right: 20px;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 10px 16px;
+            font-size: 12px;
+            width: auto;
+            max-width: none;
+            backdrop-filter: blur(5px);
+            margin-top: 0;
+        }
+
+        .random-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+        #fotoRandomContenedor {
+            max-width: 90%;
+            max-height: 70dvh;
+            border-radius: 15px;
+            border: 3px solid white;
+            box-shadow: 0 0 20px rgba(176, 124, 255, 0.7);
+            object-fit: contain;
+        }
+
+        #s8 {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('mono2.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        iframe {
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<audio id="musicaFondo" loop src="https://ia903204.us.archive.org/16/items/super-mario-bros-theme-song/Super%20Mario%20Bros.%20Theme%20Song.mp3"></audio>
+
+<button id="interruptorRandom" onclick="mostrarFotoRandom()">💥 Foto Random</button>
+
+<div class="random-overlay" id="randomModal">
+    <img src="" alt="Momento Random" id="fotoRandomContenedor">
+    <button onclick="cerrarFotoRandom()" style="background: white; color: #1a1a2e; font-weight: bold; margin-top: 30px; width: 80%;">Cerrar (está bien, sigo)</button>
+</div>
+
+<div class="screen active" id="s1">
+    <h1 style="margin-bottom: 5px;">Valentina… 🎂</h1>
+    <p style="margin-bottom: 30px; font-size: 14px; opacity: 0.8;">Si estás viendo esto, es porque llegó tu día</p>
+    <button onclick="goTo(2)">Empezar (si queres, si no, no, no se)</button>
+</div>
+
+<div class="screen" id="s2">
+    <p id="carta" style="font-size: 15px; line-height: 1.5; text-align: left; padding: 0 10px;"></p>
+    <button onclick="goTo(3)" style="margin-top: 25px;">Sigamos dale</button>
+</div>
+
+<div class="screen" id="s3">
+    <p style="margin-bottom: 25px; font-size: 18px; font-weight: 500;">¿Dónde nos conocimos?</p>
+    <button onclick="wrong()">en el soleil</button>
+    <button onclick="wrong(); triggerLogro('Juraría que fue el basurero 🗑️')">en un basurero (ahi te encontre)</button>
+    <button onclick="triggerLogro('Recuerdos inolvidables ✨'); goTo(4)">en la secundaria</button>
+
+    <p id="errorMsg"></p>
+</div>
+
+<div class="screen" id="s4">
+    <p style="padding: 0 15px;">Hace 6 años… secundaria… voley… y te hice mierda por no saber jugar</p>
+    <button onclick="goTo(5)">fa loco solo te burlas</button>
+</div>
+
+<div class="screen" id="s5">
+    <p style="padding: 0 15px;">Esto merece música, pero no se que cancion poner jajajja asi que nada 🎧</p>
+    <iframe style="border-radius:12px; margin: 20px 0;"
+            src="https://open.spotify.com/embed/track/4cOdK2wGLETKBW3PvgPWqT"
+            width="300" height="80"></iframe>
+    <button onclick="goTo(6)">Siguiente</button>
+</div>
+
+<div class="screen" id="s6">
+    <p style="margin-bottom: 25px; font-size: 18px; font-weight: 500;">¿esto requiere foto pata?</p>
+    <button onclick="wrong()">si obvio que si</button>
+    <button onclick="wrong()">no ni ahi gil mugriento</button>
+    <button onclick="triggerLogro('Que olor que tenes por dios 🦨'); goTo(7)">no podemos tengo las patas sucias</button>
+
+    <p id="errorMsg"></p>
+</div>
+
+<div class="screen" id="s7">
+    <p style="padding: 0 15px;">fuera de todo, pasamos muchas cosas y puedo decir con seguridad...<br><br><b>Sos de las mejores cosas que me pasaron ❤️</b></p>
+    <button onclick="showFinal()" style="margin-top: 30px;">No toques esto (ahre pa que lo ponia entonces)</button>
+</div>
+
+<div class="screen" id="s8">
+    <h2 style="font-size: 28px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Feliz cumpleaños enana</h2>
+    <p style="font-size: 18px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Te quiero muchísimo</p>
+</div>
+
+<script>
+    let current = 1;
+
+    // Tu lista de fotos random intacta
+    const listaFotosRandom = [
+        'cherk.jpg',
+        'robleii.jpg',
+        'becerra.jpg',
+        'mike.jpg',
+        'roblei.jpg',
+        'mari.jpg'
+    ];
+
+    let ultimaFotoRandomIndex = -1;
+
+    function goTo(n){
+        disableButtons();
+
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('s'+n).classList.add('active');
+        current = n;
+
+        document.querySelectorAll("#errorMsg").forEach(e => e.innerText = "");
+
+        if(n === 2){
+            let musica = document.getElementById("musicaFondo");
+            musica.volume = 0.15;
+            musica.play().catch(e => console.log("Audio de fondo bloqueado"));
+
+            document.getElementById("carta").innerHTML = "";
+            i = 0;
+            escribir();
+        }
+    }
+
+    function mostrarFotoRandom() {
+        let sonidoPop = new Audio('https://www.myinstants.com/media/sounds/mario-coin.mp3');
+        sonidoPop.volume = 0.4;
+        sonidoPop.play().catch(e => {});
+
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * listaFotosRandom.length);
+        } while (randomIndex === ultimaFotoRandomIndex && listaFotosRandom.length > 1);
+
+        ultimaFotoRandomIndex = randomIndex;
+        const fotoElegida = listaFotosRandom[randomIndex];
+
+        document.getElementById("fotoRandomContenedor").src = fotoElegida;
+        document.getElementById("randomModal").style.display = "flex";
+    }
+
+    function cerrarFotoRandom() {
+        document.getElementById("randomModal").style.display = "none";
+    }
+
+    function disableButtons(){
+        document.querySelectorAll("button").forEach(btn=>{
+            btn.disabled = true;
+            setTimeout(()=>btn.disabled=false, 800);
+        });
+    }
+
+    function wrong(){
+        const msg = document.querySelector(".active #errorMsg");
+        if(msg){
+            msg.innerText = "❌ Respuesta incorrecta";
+            msg.style.transform = "scale(1.1)";
+            setTimeout(()=> msg.style.transform = "scale(1)", 200);
+
+            // Vibración si el celular de ella lo soporta
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+        }
+    }
+
+    function triggerLogro(mensaje) {
+        let sonidoLogro = new Audio('https://www.myinstants.com/media/sounds/mario-coin.mp3');
+        sonidoLogro.volume = 0.5;
+        sonidoLogro.play().catch(e => {});
+
+        if (document.querySelector('.logro')) return;
+
+        const logroDiv = document.createElement("div");
+        logroDiv.className = "logro";
+        logroDiv.innerHTML = "🏆 Logro desbloqueado: <br>" + mensaje;
+        document.body.appendChild(logroDiv);
+
+        setTimeout(() => logroDiv.classList.add("show"), 100);
+
+        setTimeout(() => {
+            logroDiv.classList.remove("show");
+            setTimeout(() => logroDiv.remove(), 500);
+        }, 3500);
+    }
+
+    const texto = `¿Te acordás del día en que te conocí?
+
+Ese día supe que mataría por vos.
+Y perdón si alguna vez me perdí…
+pero sabés que siempre podés confiar en mí.
+
+Ya son 6 años de amistad, enana pendeja,
+y aun así te quiero como el primer día.
+
+Sabés que te banco a muerte en todo lo que hagas,
+y estoy esperando el día en que te hagas millonaria
+y me digas:
+
+"vení a trabajar en mi empresa multimillonaria,
+te pago 500 mil dólares por día"
+
+y tomemos Starbucks todos los días ☕
+
+Te agradezco por estar en esos días malos,
+por aguantar mis cierres emocionales…
+
+(aunque te quejabas, pero estabas igual)
+
+Gracias por darme un lugar en tu corazón,
+aunque sea un monoambiente escondido 😌
+
+No tengo plata para un regalo…
+pero hice esto (valoralo gila)
+
+Aunque en la pobreza nos vemos bien…
+con plata nos veríamos mejor
+
+Feliz cumpleaños, enana ❤️`;
+
+    let i = 0;
+    function escribir(){
+        if(i < texto.length){
+            // Optimizado para celular: saltos de línea con <br> y un poco más rápido (30ms)
+            if(texto.charAt(i) === '\n') {
+                document.getElementById("carta").innerHTML += '<br>';
+            } else {
+                document.getElementById("carta").innerHTML += texto.charAt(i);
+            }
+            i++;
+            setTimeout(escribir, 30);
+        }
+    }
+
+    function showFinal(){
+        goTo(8);
+
+        let sonidoFinal = new Audio('https://www.myinstants.com/media/sounds/yay_1.mp3');
+        sonidoFinal.volume = 0.6;
+        sonidoFinal.play().catch(e => {});
+
+        document.querySelectorAll(".confetti").forEach(e => e.remove());
+
+        // Reducido a 60 confetis para que no se le trabe el celular
+        for(let j=0; j<60; j++){
+            let conf = document.createElement("div");
+            conf.className = "confetti";
+            conf.style.left = Math.random()*100+"vw";
+            conf.style.animationDuration = (Math.random()*3+2)+"s";
+            conf.style.background = "hsl("+Math.random()*360+",100%,60%)";
+
+            if (Math.random() > 0.5) {
+                conf.style.borderRadius = "50%";
+            }
+
+            document.body.appendChild(conf);
+        }
+    }
+</script>
+
+</body>
+</html>
