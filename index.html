@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Para Valentina 🎂</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
+            color: white;
+            overflow: hidden;
+            position: relative; /* Necesario para los elementos flotantes */
+        }
+
+        .screen {
+            display: none;
+            height: 100vh;
+            padding: 30px;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .active {
+            display: flex;
+            animation: fade 0.8s ease;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #7a5cff, #b07cff);
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #errorMsg {
+            color: #ff8080;
+            margin-top: 10px;
+            transition: 0.2s;
+            min-height: 24px;
+        }
+
+        @keyframes fade {
+            from {opacity: 0; transform: translateY(15px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        /* Confeti mejorado con rotación */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            animation: fall linear infinite;
+            z-index: 100;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(720deg); }
+        }
+
+        /* Sistema de logros */
+        .logro {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 50, 0.95);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: 2px solid #b07cff;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+        }
+
+        .logro.show {
+            bottom: 40px;
+        }
+
+        /* --- NUEVO: BOTÓN INTERRUPTOR RANDOM --- */
+        #interruptorRandom {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000; /* Por encima de todo, menos de las fotos random */
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        #interruptorRandom:hover {
+            background: rgba(176, 124, 255, 0.3);
+            border-color: #b07cff;
+        }
+
+        /* --- NUEVO: MODAL PARA FOTOS RANDOM --- */
+        .random-overlay {
+            display: none; /* Escondido por defecto */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000; /* Lo más alto de todo */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+        #fotoRandomContenedor {
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 15px;
+            border: 4px solid white;
+            box-shadow: 0 0 20px rgba(176, 124, 255, 0.7);
+            object-fit: contain; /* No deforma la foto */
+        }
+
+        /* Fondo pantalla final */
+        #s8 {
+            /* SOLAMENTE CAMBIÁ "TU_FOTO_ACA.jpg" POR EL NOMBRE DE TU ARCHIVO */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('mono2.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<audio id="musicaFondo" loop src="https://ia903204.us.archive.org/16/items/super-mario-bros-theme-song/Super%20Mario%20Bros.%20Theme%20Song.mp3"></audio>
+
+<button id="interruptorRandom" onclick="mostrarFotoRandom()">💥 Foto Random</button>
+
+<div class="random-overlay" id="randomModal">
+    <img src="" alt="Momento Random" id="fotoRandomContenedor">
+    <button onclick="cerrarFotoRandom()" style="background: white; color: #1a1a2e; font-weight: bold; margin-top: 25px;">Cerrar (está bien, sigo)</button>
+</div>
+
+<div class="screen active" id="s1">
+    <h1>Valentina… 🎂</h1>
+    <p>Si estás viendo esto, es porque llegó tu día</p>
+    <button onclick="goTo(2)">Empezar (si queres, si no, no, no se)</button>
+</div>
+
+<div class="screen" id="s2">
+    <p id="carta"></p>
+    <button onclick="goTo(3)">Sigamos dale</button>
+</div>
+
+<div class="screen" id="s3">
+    <p>¿Dónde nos conocimos?</p>
+    <button onclick="wrong()">en el soleil</button>
+    <button onclick="wrong(); triggerLogro('Juraría que fue el basurero 🗑️')">en un basurero (ahi te encontre)</button>
+    <button onclick="triggerLogro('Recuerdos inolvidables ✨'); goTo(4)">en la secundaria</button>
+
+    <p id="errorMsg"></p>
+</div>
+
+<div class="screen" id="s4">
+    <p>Hace 6 años… secundaria… voley… y te hice mierda por no saber jugar</p>
+    <button onclick="goTo(5)">fa loco solo te burlas</button>
+</div>
+
+<div class="screen" id="s5">
+    <p>Esto merece música, pero no se que cancion poner jajajja asi que nada 🎧</p>
+    <iframe style="border-radius:12px"
+            src="https://open.spotify.com/embed/track/4cOdK2wGLETKBW3PvgPWqT"
+            width="300" height="80"></iframe>
+    <button onclick="goTo(6)">Siguiente</button>
+</div>
+
+<div class="screen" id="s6">
+    <p>¿esto requiere foto pata?</p>
+    <button onclick="wrong()">si obvio que si</button>
+    <button onclick="wrong()">no ni ahi gil mugriento</button>
+    <button onclick="triggerLogro('Que olor que tenes por dios 🦨'); goTo(7)">no podemos tengo las patas sucias</button>
+
+    <p id="errorMsg"></p>
+</div>
+
+<div class="screen" id="s7">
+    <p>fuera de todo, pasamos muchas cosas y puedo decir con seguridad
+        Sos de las mejores cosas que me pasaron ❤️</p>
+    <button onclick="showFinal()">No toques esto (ahre pa que lo ponia entonces)</button>
+</div>
+
+<div class="screen" id="s8">
+    <h2>Feliz cumpleaños enana</h2>
+    <p>Te quiero muchísimo</p>
+</div>
+
+<script>
+    let current = 1;
+
+    // --- NUEVO: LISTA DE FOTOS RANDOM (ARREGLO DE JAVASCRIPT) ---
+    // Acá poné los nombres de tus archivos graciosos. Podés agregar infinitos.
+    const listaFotosRandom = [
+        'cherk.jpg',
+        'robleii.jpg',
+        'becerra.jpg',
+        'mike.jpg',
+        'roblei.jpg',
+        'mari.jpg'
+
+    ];
+
+    // Para no repetir la misma foto dos veces seguidas
+    let ultimaFotoRandomIndex = -1;
+
+    /* Función para navegar y música */
+    function goTo(n){
+        disableButtons();
+
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('s'+n).classList.add('active');
+        current = n;
+
+        // Limpiar errores
+        document.querySelectorAll("#errorMsg").forEach(e => e.innerText = "");
+
+        // Arranca la música al pasar a la pantalla de la carta
+        if(n === 2){
+            let musica = document.getElementById("musicaFondo");
+            musica.volume = 0.15; // Volumen bajito
+            musica.play().catch(e => console.log("Audio de fondo bloqueado"));
+
+            document.getElementById("carta").innerHTML = "";
+            i = 0;
+            escribir();
+        }
+    }
+
+    /* --- NUEVO: MOSTRAR FOTO RANDOM --- */
+    function mostrarFotoRandom() {
+        // Sonido de logro (reutilizado)
+        let sonidoPop = new Audio('https://www.myinstants.com/media/sounds/mario-coin.mp3');
+        sonidoPop.volume = 0.4;
+        sonidoPop.play();
+
+        // Elegir índice aleatorio distinto al último
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * listaFotosRandom.length);
+        } while (randomIndex === ultimaFotoRandomIndex && listaFotosRandom.length > 1);
+
+        ultimaFotoRandomIndex = randomIndex;
+        const fotoElegida = listaFotosRandom[randomIndex];
+
+        // Cargar y mostrar
+        document.getElementById("fotoRandomContenedor").src = fotoElegida;
+        document.getElementById("randomModal").style.display = "flex";
+    }
+
+    /* --- NUEVO: CERRAR FOTO RANDOM --- */
+    function cerrarFotoRandom() {
+        document.getElementById("randomModal").style.display = "none";
+    }
+
+    /* Evitar spam de clicks */
+    function disableButtons(){
+        document.querySelectorAll("button").forEach(btn=>{
+            btn.disabled = true;
+            setTimeout(()=>btn.disabled=false, 800);
+        });
+    }
+
+    /* Respuesta incorrecta */
+    function wrong(){
+        const msg = document.querySelector(".active #errorMsg");
+        if(msg){
+            msg.innerText = "❌ Respuesta incorrecta";
+            msg.style.transform = "scale(1.2)";
+            setTimeout(()=> msg.style.transform = "scale(1)", 200);
+        }
+    }
+
+    /* Función para logros con sonido de moneda */
+    function triggerLogro(mensaje) {
+        let sonidoLogro = new Audio('https://www.myinstants.com/media/sounds/mario-coin.mp3');
+        sonidoLogro.volume = 0.5;
+        sonidoLogro.play().catch(e => console.log("Audio bloqueado"));
+
+        if (document.querySelector('.logro')) return;
+
+        const logroDiv = document.createElement("div");
+        logroDiv.className = "logro";
+        logroDiv.innerHTML = "🏆 Logro desbloqueado: <br>" + mensaje;
+        document.body.appendChild(logroDiv);
+
+        setTimeout(() => logroDiv.classList.add("show"), 100);
+
+        setTimeout(() => {
+            logroDiv.classList.remove("show");
+            setTimeout(() => logroDiv.remove(), 500);
+        }, 4000);
+    }
+
+    /* Carta con efecto de tipeo */
+    const texto = `¿Te acordás del día en que te conocí?
+
+Ese día supe que mataría por vos.
+Y perdón si alguna vez me perdí…
+pero sabés que siempre podés confiar en mí.
+
+Ya son 6 años de amistad, enana pendeja,
+y aun así te quiero como el primer día.
+
+Sabés que te banco a muerte en todo lo que hagas,
+y estoy esperando el día en que te hagas millonaria
+y me digas:
+
+"vení a trabajar en mi empresa multimillonaria,
+te pago 500 mil dólares por día"
+
+y tomemos Starbucks todos los días ☕
+
+Te agradezco por estar en esos días malos,
+por aguantar mis cierres emocionales…
+
+(aunque te quejabas, pero estabas igual)
+
+Gracias por darme un lugar en tu corazón,
+aunque sea un monoambiente escondido 😌
+
+No tengo plata para un regalo…
+pero hice esto (valoralo gila)
+
+Aunque en la pobreza nos vemos bien…
+con plata nos veríamos mejor
+
+Feliz cumpleaños, enana ❤️`;
+
+    let i = 0;
+    function escribir(){
+        if(i < texto.length){
+            document.getElementById("carta").innerHTML += texto.charAt(i);
+            i++;
+            setTimeout(escribir, 20);
+        }
+    }
+
+    /* Final: Festejo, sonido y confeti */
+    function showFinal(){
+        goTo(8);
+
+        // Sonido de festejo
+        let sonidoFinal = new Audio('https://www.myinstants.com/media/sounds/yay_1.mp3');
+        sonidoFinal.volume = 0.6;
+        sonidoFinal.play().catch(e => console.log("Audio bloqueado"));
+
+        // Limpiar confeti viejo si hubiera
+        document.querySelectorAll(".confetti").forEach(e => e.remove());
+
+        // Generar 100 papelitos de confeti
+        for(let j=0; j<100; j++){
+            let conf = document.createElement("div");
+            conf.className = "confetti";
+            conf.style.left = Math.random()*100+"vw";
+            conf.style.animationDuration = (Math.random()*3+2)+"s";
+            conf.style.background = "hsl("+Math.random()*360+",100%,60%)";
+
+            // Mitad cuadrados, mitad redondos
+            if (Math.random() > 0.5) {
+                conf.style.borderRadius = "50%";
+            }
+
+            document.body.appendChild(conf);
+        }
+    }
+</script>
+
+</body>
+</html>
